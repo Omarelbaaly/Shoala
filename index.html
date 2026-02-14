@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مخازن الشعلة</title>
+  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+
+  <!-- Login Section -->
+  <div id="login-screen">
+    <div class="login-card">
+      <h2>مخازن الشعلة</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label>اسم المستخدم</label>
+          <input type="text" id="username" placeholder="ادخل اسم المستخدم" required>
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <input type="password" id="password" placeholder="ادخل كلمة المرور" required>
+        </div>
+        <button type="submit" class="btn">دخول</button>
+        <p style="margin-top:10px; font-size:0.8rem; color:#666;">للنسخة التجريبية: admin / 123456</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- App Section -->
+  <div id="app-screen" class="hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span>مخازن الشعلة</span>
+      </div>
+      <ul class="nav-links">
+        <li class="nav-item active" data-view="dashboard">
+          <span>📊</span> لوحة التحكم
+        </li>
+        <li class="nav-item" data-view="products">
+          <span>📦</span> الأصناف
+        </li>
+        <li class="nav-item" data-view="movements">
+          <span>🔄</span> حركة المخزون
+        </li>
+        <li class="nav-item" data-view="reports">
+          <span>📑</span> التقارير
+        </li>
+        <li class="nav-item" data-view="settings">
+          <span>⚙️</span> النسخ الاحتياطي
+        </li>
+      </ul>
+      <div class="user-info">
+        <div id="current-user-name">المستخدم: --</div>
+        <button id="logout-btn" class="action-btn" style="margin-top:5px; background:rgba(255,255,255,0.2); width:100%">خروج</button>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="main-content">
+      
+      <!-- Dashboard View -->
+      <section id="view-dashboard">
+        <div class="header">
+          <h1>لوحة التحكم</h1>
+        </div>
+        <div class="card-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3>عدد الأصناف</h3>
+              <p id="stat-products">0</p>
+            </div>
+            <div style="font-size:2rem">📦</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3>إجمالي الكميات</h3>
+              <p id="stat-quantity">0</p>
+            </div>
+            <div style="font-size:2rem">📈</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3>حركات اليوم</h3>
+              <p id="stat-today">0</p>
+            </div>
+            <div style="font-size:2rem">📅</div>
+          </div>
+        </div>
+
+        <h3>آخر 5 عمليات</h3>
+        <div class="table-container">
+          <table id="recent-table">
+            <thead>
+              <tr>
+                <th>الصنف</th>
+                <th>النوع</th>
+                <th>الكمية</th>
+                <th>التاريخ</th>
+                <th>المستخدم</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Products View -->
+      <section id="view-products" class="hidden">
+        <div class="header">
+          <h1>إدارة الأصناف</h1>
+          <button class="btn" id="btn-add-product" data-role="admin,employee">+ إضافة صنف</button>
+        </div>
+        <div class="toolbar">
+          <input type="text" id="product-search" class="search-input" placeholder="بحث باسم الصنف أو الكود..." list="product-suggestions">
+          <datalist id="product-suggestions"></datalist>
+        </div>
+        <div class="table-container">
+          <table id="products-table">
+            <thead>
+              <tr>
+                <th>الكود</th>
+                <th>الاسم</th>
+                <th>الكمية الحالية</th>
+                <th>الحد الأدنى</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Movements View -->
+      <section id="view-movements" class="hidden">
+        <div class="header">
+          <h1>حركة المخزون</h1>
+        </div>
+        <div style="max-width: 600px; background: white; padding: 2rem; border-radius: 10px;">
+          <form id="movement-form">
+            <div class="form-group">
+              <label>نوع الحركة</label>
+              <select id="mov-type" class="search-input" style="width:100%; padding:10px;">
+                <option value="IN">وارد (إضافة للمخزن)</option>
+                <option value="OUT">منصرف (سحب من المخزن)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الصنف</label>
+              <select id="mov-product" class="search-input" style="width:100%; padding:10px;" required>
+                <!-- Filled via JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الكمية</label>
+              <input type="number" id="mov-qty" min="1" required>
+            </div>
+            <div class="form-group">
+              <label>السبب / ملاحظات</label>
+              <input type="text" id="mov-reason">
+            </div>
+            <button type="submit" class="btn btn-success" style="width:100%">تسجيل الحركة</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Reports View -->
+      <section id="view-reports" class="hidden">
+        <div class="header">
+          <h1>التقارير</h1>
+          <button class="btn btn-secondary" id="btn-export-excel">تصدير Excel</button>
+        </div>
+        <div class="toolbar" style="background:white; padding:15px; border-radius:8px;">
+          <input type="date" id="report-start" class="search-input">
+          <span style="align-self:center">إلى</span>
+          <input type="date" id="report-end" class="search-input">
+          <button class="btn" id="btn-filter-report">عرض</button>
+        </div>
+        <div class="table-container">
+          <table id="report-table">
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>الكود</th>
+                <th>الصنف</th>
+                <th>النوع</th>
+                <th>الكمية</th>
+                <th>السبب</th>
+                <th>المستخدم</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Settings/Backup View -->
+      <section id="view-settings" class="hidden">
+        <div class="header">
+          <h1>النسخ الاحتياطي</h1>
+        </div>
+        <div class="card-grid">
+          <div class="stat-card" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+            <h3>حفظ نسخة من قاعدة البيانات</h3>
+            <p style="font-size: 0.9rem; color: #666;">قم بتحميل نسخة كاملة من البيانات لحفظها في مكان آمن.</p>
+            <button class="btn" id="btn-backup">إنشاء نسخة احتياطية</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Add/Edit Product -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">إضافة صنف</h3>
+        <span class="close-modal">&times;</span>
+      </div>
+      <form id="product-form">
+        <input type="hidden" id="prod-id">
+        <div class="form-group">
+          <label>اسم الصنف</label>
+          <input type="text" id="prod-name" required>
+        </div>
+        <div class="form-group">
+          <label>كود الصنف</label>
+          <input type="text" id="prod-code" required>
+        </div>
+        <div class="form-group">
+          <label>الحد الأدنى للتنبيه</label>
+          <input type="number" id="prod-min" value="5" min="0" required>
+        </div>
+        <button type="submit" class="btn">حفظ</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast">تمت العملية بنجاح</div>
+
+  <!-- MOCK API FOR BROWSER PREVIEW -->
+  <script>
+    if (!window.api) {
+      console.warn('Electron API not found. Running in Browser Mock Mode.');
+      
+      // Initial Mock Data
+      const mockData = {
+        products: [
+          { id: 1, name: 'لابتوب ديل', code: 'DELL-001', min_limit: 5, quantity: 10, created_at: new Date().toISOString() },
+          { id: 2, name: 'ماوس لاسلكي', code: 'ACC-002', min_limit: 10, quantity: 50, created_at: new Date().toISOString() },
+          { id: 3, name: 'لوحة مفاتيح ميكانيكية', code: 'ACC-003', min_limit: 5, quantity: 3, created_at: new Date().toISOString() }
+        ],
+        movements: [
+          { id: 1, product_id: 1, type: 'IN', quantity: 10, reason: 'رصيد افتتاحي', user_id: 1, created_at: new Date().toISOString() }
+        ]
+      };
+
+      window.api = {
+        login: async (u, p) => {
+          if (u === 'admin' && p === '123456') {
+            return { success: true, user: { id: 1, username: 'admin', role: 'admin' } };
+          }
+          return { success: false, error: 'بيانات غير صحيحة' };
+        },
+        getStats: async () => ({
+          productsCount: mockData.products.length,
+          totalQuantity: mockData.products.reduce((a, b) => a + Number(b.quantity), 0),
+          movementsCount: mockData.movements.length,
+          todayMovements: mockData.movements.length
+        }),
+        getProducts: async (s) => mockData.products,
+        addProduct: async (d) => {
+          const newId = mockData.products.length + 1;
+          mockData.products.push({ ...d, id: newId, quantity: 0, created_at: new Date().toISOString() });
+          return newId;
+        },
+        updateProduct: async (d) => {
+          const idx = mockData.products.findIndex(p => p.id == d.id);
+          if (idx > -1) mockData.products[idx] = { ...mockData.products[idx], ...d };
+          return 1;
+        },
+        deleteProduct: async (id) => {
+          mockData.products = mockData.products.filter(p => p.id != id);
+          return 1;
+        },
+        addMovement: async (d) => {
+          const p = mockData.products.find(x => x.id == d.product_id);
+          if (!p) throw new Error('Product not found');
+          
+          if (d.type === 'IN') p.quantity += Number(d.quantity);
+          else {
+            if (p.quantity < d.quantity) throw new Error('الكمية غير كافية');
+            p.quantity -= Number(d.quantity);
+          }
+          
+          mockData.movements.push({
+            ...d,
+            id: mockData.movements.length + 1,
+            created_at: new Date().toISOString()
+          });
+          return true;
+        },
+        getRecentMovements: async () => mockData.movements.slice(-5).map(m => {
+          const p = mockData.products.find(x => x.id == m.product_id);
+          return { ...m, product_name: p?.name, user_name: 'admin' };
+        }),
+        getAllMovements: async () => mockData.movements.map(m => {
+          const p = mockData.products.find(x => x.id == m.product_id);
+          return { ...m, product_name: p?.name, code: p?.code, username: 'admin' };
+        }),
+        backup: async () => { alert('في وضع المتصفح: تم "تصدير" قاعدة البيانات الوهمية.'); return { success: true }; },
+        exportToExcel: async () => { alert('في وضع المتصفح: تم "تصدير" ملف Excel الوهمي.'); return { success: true }; },
+        onNotification: (cb) => {} 
+      };
+    }
+  </script>
+
+  <script src="renderer.js"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

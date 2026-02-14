@@ -1,0 +1,5 @@
+{
+  "name": "shoala-stores-manager",
+  "description": "نظام احترافي لإدارة المخازن والحسابات يعمل كـ Desktop Application باستخدام Electron و SQLite.",
+  "requestFramePermissions": []
+}
